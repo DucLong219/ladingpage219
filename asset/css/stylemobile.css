@@ -1,0 +1,96 @@
+@media only screen and (max-width: 1000px) {
+
+    .logo-pr-food,
+    .order-food {
+        display: none;
+    }
+
+    .pr-food-mobile {
+        display: block !important;
+    }
+
+    .img-pr-food-mobile {
+        width: 100%;
+        max-height: auto;
+        padding-left: 1rem;
+    }
+
+    #header_left,
+    #header_right,
+    #pr_food_mobile {
+        max-width: 100%;
+        padding: 0;
+        text-align: center;
+
+    }
+
+    .order-food-mobile {
+        display: block;
+    }
+
+    #section_2 {
+        padding-top: 62%;
+    }
+
+    .fresh-crab-mobile {
+        display: block !important;
+    }
+
+    .fresh-crab {
+        display: none;
+    }
+
+    .logo-food {
+        max-width: 100%;
+        padding: 1rem 1rem 0rem 1rem;
+    }
+
+    .img-logo-crab {
+        max-width: 100%;
+    }
+
+    .slick-prev {
+        z-index: 2;
+        left: -12px !important;
+    }
+
+    .slick-next {
+        z-index: 2;
+        right: 0px !important;
+    }
+
+    .progress-container {
+        width: 30%;
+        height: 5px;
+    }
+
+    .title-des {
+        font-size: 20px;
+    }
+
+    .title-des-2 {
+        font-size: 14px;
+    }
+
+    .txt-des p {
+        font-size: 14px !important;
+    }
+
+    .footer {
+        position: absolute;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        padding: 1rem;
+        align-items: start;
+    }
+
+    .website-khoaikhau {
+        border: none;
+    }
+
+    .txt-ft {
+        font-weight: 500;
+        font-size: 14px;
+    }
+}
