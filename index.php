@@ -1,4 +1,7 @@
 <?php
+$provinceList = json_decode(file_get_contents('https://api.viettelpost.vn/api/setting/listallprovince')); //tỉnh/thành phố
+$districtList = json_decode(file_get_contents('https://apivtp-dev.viettelpost.vn/api/setting/listalldistrict')); //quận/huyện
+$wardsList = json_decode(file_get_contents('https://apivtp-dev.viettelpost.vn/api/setting/listallwards')); //phường/xã
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -16,6 +19,7 @@
 
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <body>
     <header class="row m-0 p-0">
@@ -103,34 +107,71 @@
                     <h3 class="text-center my-5"><span class="title-food">Đặt hàng ngay</span></h3>
                     <div class="row">
                         <div class="col-xl-6 col-lg-6 col-md-12">
-                            <input type="text" class="form-control" name="name" id="name" placeholder="Họ và tên" require>
+                            <input type="text" placeholder="Họ và tên" class="form-control" name="full_name" id="full_name" required>
+                            <div class="invalid-feedback">
+                                Họ tên không để trống!
+                            </div>
                         </div>
                         <div class="col-xl-6 col-lg-6 col-md-12">
-                            <input type="text" class="form-control" name="phone" id="phone" placeholder="Số điện thoại" require>
+                            <input type="text" placeholder="Số điện thoại" class="form-control" name="phone_number" id="phone_number" required>
+                            <div class="invalid-feedback">
+                                Số điện thoại không để trống!
+                            </div>
                         </div>
                     </div>
                     <div class="row mt-2">
                         <div class="col-4">
-                            <input type="text" class="form-control" name="city" id="city" placeholder="Tỉnh/Thành phố">
+                            <select name="tinh_tp" id="tinh_tp" class="form-select" required>
+                                <option selected disabled value="">Tỉnh/Thành phố</option>
+                                <?php foreach ($provinceList as $province) : ?>
+                                    <option value="<?php echo $province->PROVINCE_ID; ?>">
+                                        <?php echo $province->PROVINCE_NAME; ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                            <div class="invalid-feedback">
+                                Chọn tỉnh/thành phố!
+                            </div>
                         </div>
                         <div class="col-4">
-                            <input type="text" class="form-control" name="district" id="district" placeholder="Quận/huyện">
+                            <select name="quan_huyen" id="quan_huyen" class="form-select" required>
+                                <option selected disabled value="">Quận/Huyện</option>
+                            </select>
+                            <div class="invalid-feedback">
+                                Chọn quận/huyện!
+                            </div>
                         </div>
                         <div class="col-4">
-                            <input type="text" class="form-control" name="wards" id="wards" placeholder="Phường/xã">
+                            <select name="phuong_xa" id="phuong_xa" class="form-select" required>
+                                <option selected disabled value="">Phường/Xã</option>
+                            </select>
+                            <div class="invalid-feedback">
+                                Chọn phường/xã!
+                            </div>
                         </div>
                     </div>
                     <div class="row mt-2">
                         <div class="col-12">
-                            <input type="text" class="form-control" name="address" id="address" placeholder="Địa chỉ nhận hàng (Số nhà/Đường/Thôn...)">
+                            <input type="text" placeholder="Địa chỉ nhận hàng (Số nhà/Đường/Thôn...)" class="form-control" name="so_nha" id="so_nha" required>
+                            <div class="invalid-feedback">
+                                Địa chỉ không để trống!
+                            </div>
                         </div>
                     </div>
                     <div class="row mt-2">
                         <div class="col-6">
-                            <input type="text" class="form-control" name="typeCrab" id="address" placeholder="Loại cua">
+                            <select name="loai_cua" id="loai_cua" class="form-select" required>
+                                <option selected disabled value="">Loại cua</option>
+                                <option>Cua gạch</option>
+                                <option>Cua Cà Mau</option>
+                                <option>Cua Hải Phòng</option>
+                            </select>
+                            <div class="invalid-feedback">
+                                Chọn loại cua!
+                            </div>
                         </div>
                         <div class="col-6">
-                            <input type="text" class="form-control" name="countOrder" id="countOrder" placeholder="Số lượng">
+                            <input type="text" class="form-control" name="so_luong" id="so_luong" placeholder="Số lượng">
                         </div>
                     </div>
                     <div class="row mt-2">
@@ -252,6 +293,93 @@
                 });
             }
         });
+        const districtList = <?php echo json_encode($districtList); ?>;
+        const wardsList = <?php echo json_encode($wardsList); ?>;
+        var provinceName = '';
+        var districtsName = '';
+        var wardsName = '';
+
+        $('#tinh_tp').select2();
+        $('#tinh_tp').change(function() {
+            $('#quan_huyen').select2();
+            var provinceId = parseInt($(this).val()); //id tỉnh
+            provinceName = $('#tinh_tp option:selected').text();
+            var districts = districtList.filter(function(district) {
+                return district.PROVINCE_ID === provinceId;
+            });
+            $('#quan_huyen').empty();
+            $('#quan_huyen').append('<option selected disabled value="">Quận/Huyện</option>');
+            districts.forEach(function(district) {
+                $('#quan_huyen').append('<option value="' + district.DISTRICT_ID + '">' + district.DISTRICT_NAME + '</option>');
+            });
+        });
+
+        $('#quan_huyen').change(function() {
+            $('#phuong_xa').select2();
+            var districtId = parseInt($(this).val()); //id quận/huyện
+            districtsName = $('#quan_huyen option:selected').text();
+            var wards = wardsList.filter(function(wards) {
+                return wards.DISTRICT_ID === districtId;
+            });
+            $('#phuong_xa').empty();
+            $('#phuong_xa').append('<option selected disabled value="">Phường/Xã</option>');
+            wards.forEach(function(wards) {
+                $('#phuong_xa').append('<option value="' + wards.WARDS_ID + '">' + wards.WARDS_NAME + '</option>');
+            });
+        });
+
+        $('#phuong_xa').change(function() {
+            wardsName = $('#phuong_xa option:selected').text();
+        });
+
+        (function() {
+            'use strict'
+            var forms = document.querySelectorAll('.form-order')
+            Array.prototype.slice.call(forms)
+                .forEach(function(form) {
+                    form.addEventListener('submit', function(event) {
+                        event.preventDefault();
+                        event.stopPropagation();
+
+                        if (form.checkValidity()) {
+                            sendAjax(form);
+                        }
+                        form.classList.add('was-validated')
+                    }, false)
+                })
+        })()
+
+        function sendAjax(form) {
+            var formData = $(form).serializeArray();
+            formData.push({
+                name: 'provinceName',
+                value: provinceName
+            });
+            formData.push({
+                name: 'districtsName',
+                value: districtsName
+            });
+            formData.push({
+                name: 'wardsName',
+                value: wardsName
+            });
+            $.ajax({
+                url: './asset/src/handle-form-submit.php',
+                type: 'post',
+                data: formData,
+                success: function(response) {
+                    $(".error").remove();
+                    if (response.error === 'true') {
+                        console.log(response);
+                    } else {
+                        console.log(response);
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.log(textStatus, errorThrown);
+                }
+            });
+        }
     });
 
     function scollFormOrder() {
